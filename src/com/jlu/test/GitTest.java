@@ -9,6 +9,10 @@ package com.jlu.test;
  */
 public class GitTest {
     public static void main(String[] args){
-        System.out.println("this is a git test");
+
+        //System.out.println("this is a git test");
+        String relativePath = System.getProperty("user.dir");
+        System.out.println(relativePath);
+
     }
 }

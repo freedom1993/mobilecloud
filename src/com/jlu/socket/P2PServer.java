@@ -1,44 +1,38 @@
 package com.jlu.socket;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Dell on 2017/3/25.
  */
 public class P2PServer {
 
-    private final int PORT = 9999;
-    private ServerSocket server;
-    private String result;
-
-    public String beginTask() {
+    private static final int SERVERPORT = 9999;
+    private ServerSocket MyServer = null;
+    private List<Socket> Clients = new ArrayList<Socket>();
+    public P2PServer() {
         try {
-            server = new ServerSocket(PORT);
-            if (server != null) {
-                while (true) {
-                    Socket s = server.accept();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            System.out.println("P2P:go to");
-                            result = new LogicServer(s).receiveFile();
-                            System.out.println(result);
-                        }
-                    }).start();
-
-                }
-            } else {
-                result = "端口绑定失败";
+            MyServer = new ServerSocket(SERVERPORT);
+            mExecutorService = Executors.newCachedThreadPool();//使用线程池
+            System.out.println("start:");
+            Socket MySocket = null;
+            while (true) {
+                MySocket = MyServer.accept();
+                Clients.add(MySocket);
+                mExecutorService.execute(new LogicServer(MySocket,Clients));
             }
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            System.exit(0);
         }
+    }
 
-        System.out.println("final:"+result);
-        return result;
+    private ExecutorService mExecutorService;
     }
 
 
@@ -71,5 +65,5 @@ public class P2PServer {
 
         });
         listener.start();*/
-}
+
 
